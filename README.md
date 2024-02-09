@@ -26,7 +26,8 @@ use {
 
 ## Configuration
 
-After installing the plugin, configure it in your init.lua:
+To configure, set the `AGE_RECIPIENT` and `AGE_IDENTITY` environment variables in your shell or operating system.
+Alternatively, you can configure these settings within Neovim:
 
 ```lua
 require('age_secret').setup({
