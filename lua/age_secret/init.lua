@@ -1,16 +1,18 @@
 local M = {}
 
--- Default configuration
+-- Fetch configuration from environment variables
 local config = {
-    recipient = "age1fht3gvntpeffl65jjhdlremkl8nqe2p0ml3e2zwf0n6jd7g7lsese4hscr",
-    identity = "~/age-key.txt"
+    recipient = vim.fn.getenv("AGE_RECIPIENT") or "age1fht3gvntpeffl65jjhdlremkl8nqe2p0ml3e2zwf0n6jd7g7lsese4hscr",
+    identity = vim.fn.getenv("AGE_IDENTITY") or "~/age-key.txt"
 }
 
 function M.setup(user_config)
+
     if user_config ~= nil then
         config.recipient = user_config.recipient or config.recipient
         config.identity = user_config.identity or config.identity
     end
+
     -- Ensure Neovim recognizes the .age file extension
     vim.cmd [[
       augroup AgeFileType
@@ -46,6 +48,11 @@ function M.setup(user_config)
     vim.api.nvim_create_autocmd({"BufReadPost", "FileReadPost"}, {
         pattern = "*.age",
         callback = function()
+
+            if config.identity == vim.NIL then
+                error("Identity file not found. Please set the AGE_IDENTITY environment variable.")
+            end
+
             -- Execute age decryption
             vim.cmd(string.format("silent '[,']!rage --decrypt -i %s", config.identity))
 
@@ -63,6 +70,10 @@ function M.setup(user_config)
         callback = function()
             -- Set local buffer options for .age files
             vim.bo.binary = true  -- Equivalent to 'setlocal bin'
+
+            if config.recipient == vim.NIL then
+                error("Recipient not specified. Please set the AGE_RECIPIENT environment variable.")
+            end
 
             -- Execute age encryption
             vim.cmd(string.format("silent '[,']!rage --encrypt -r %s -a", config.recipient))
@@ -82,14 +93,12 @@ function M.setup(user_config)
     })
 
     vim.api.nvim_create_user_command('SetAgeRecipient', function(args)
-        age_secret.set_recipient(args.args)
+        M.set_recipient(args.args)
     end, { nargs = 1 }) 
     vim.api.nvim_create_user_command('SetAgeIdentity', function(args)
-        age_secret.set_indentity(args.args)
+        M.set_identity(args.args)
     end, { nargs = 1 }) 
 end
-
-
 
 -- Function to change the recipient
 function M.set_recipient(new_recipient)
@@ -97,8 +106,8 @@ function M.set_recipient(new_recipient)
 end
 
 -- Function to change the identity
-function M.set_recipient(new_identity)
-    config.recipient = new_identity
+function M.set_identity(new_identity)
+    config.identity = new_identity
 end
 
 return M
