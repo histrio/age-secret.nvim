@@ -2,8 +2,10 @@
 
 ## Description
 
-This Neovim plugin provides seamless integration for handling AGE encrypted files, specifically focusing on files with the `.age` extension. It automates the encryption and decryption process, allowing for a smooth workflow within Neovim.
-Features
+This Neovim plugin provides seamless integration for handling AGE encrypted
+files, specifically focusing on files with the `.age` extension. It automates
+the encryption and decryption process, allowing for a smooth workflow within
+Neovim. Features
 
 - Automatically decrypts `.age` files upon opening.
 - Encrypts `.age` files before saving.
@@ -14,47 +16,49 @@ Using packer.nvim
 
 ```lua
 use {
-    'histrio/age-secret.nvim',
-    config = function()
-        require('age_secret').setup({
-            -- Configuration options
-        })
-    end
+  'histrio/age-secret.nvim',
+  config = function()
+    require('age_secret').setup({
+      -- Configuration options, see below
+    })
+  end
 }
 ```
 
 
 ## Configuration
 
-To configure, set the `AGE_RECIPIENT` and `AGE_IDENTITY` environment variables in your shell or operating system.
-Alternatively, you can configure these settings within Neovim:
+To configure, set the `AGE_RECIPIENT` and `AGE_IDENTITY` environment variables
+in your shell or operating system. Alternatively, you can configure these
+settings within Neovim:
 
 ```lua
 require('age_secret').setup({
-    recipient = "age1..." -- Replace with your AGE recipient
-    identity = "~/age-key.txt" -- Replace with your AGE recipient
+  recipient = "age1...",      -- Replace with your AGE recipient
+  identity = "~/age-key.txt", -- Replace with your AGE identity
 })
 ```
 
 ## Usage
 
- - Open a `.age` file - it will be automatically decrypted.
- - Save a `.age` file - it will be automatically encrypted.
- - Change AGE recipient or identity dynamically:
+- Open a `.age` file - it will be automatically decrypted.
+- Save a `.age` file - it will be automatically encrypted.
+- Change AGE recipient or identity dynamically:
 
 ```vim
-    :SetAgeRecipient age1...
-    :SetAgeIdentity ~/age-key.txt
+:SetAgeRecipient age1...
+:SetAgeIdentity ~/age-key.txt
 ```
 
 ## Requirements
 
-    Neovim 0.5 or later.
-    Rage installed and configured on your system.
+[age](https://github.com/FiloSottile/age) (or [rage](https://github.com/str4d/rage))
+installed and configured on your system.
 
 ## Contributing
 
-Contributions are welcome! If you have a feature request, bug report, or suggestion, please open an issue on the GitHub repository.
+Contributions are welcome! If you have a feature request, bug report, or
+suggestion, please open an issue on the GitHub repository.
 
 ## License
 
