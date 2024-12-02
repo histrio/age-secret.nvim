@@ -32,7 +32,7 @@ Alternatively, you can configure these settings within Neovim:
 ```lua
 require('age_secret').setup({
     recipient = "age1..." -- Replace with your AGE recipient
-    identity = "~/age-key.txt" -- Replace with your AGE recipient
+    identity = "~/age-key.txt" -- Replace with the path to your AGE secret key
 })
 ```
 
@@ -44,7 +44,7 @@ require('age_secret').setup({
 
 ```vim
     :SetAgeRecipient age1...
-    :SetAgeIndentitry ~/age-key.txt
+    :SetAgeIdentity ~/age-key.txt
 ```
 
 ## Requirements
