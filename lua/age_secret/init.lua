@@ -2,9 +2,12 @@ local M = {}
 
 -- Fetch configuration from environment variables
 local config = {
-    recipient = vim.fn.getenv("AGE_RECIPIENT") or "age1fht3gvntpeffl65jjhdlremkl8nqe2p0ml3e2zwf0n6jd7g7lsese4hscr",
-    identity = vim.fn.getenv("AGE_IDENTITY") or "~/age-key.txt"
+    recipient = vim.env.AGE_RECIPIENT or "age1fht3gvntpeffl65jjhdlremkl8nqe2p0ml3e2zwf0n6jd7g7lsese4hscr",
+    identity = vim.env.AGE_IDENTITY or "~/age-key.txt",
+    tool = vim.env.AGE_TOOL or "rage",
 }
+
+
 
 function M.setup(user_config)
 
@@ -12,6 +15,7 @@ function M.setup(user_config)
         config.recipient = user_config.recipient or config.recipient
         config.identity = user_config.identity or config.identity
     end
+
 
     -- Ensure Neovim recognizes the .age file extension
     vim.cmd [[
@@ -49,12 +53,13 @@ function M.setup(user_config)
         pattern = "*.age",
         callback = function()
 
-            if config.identity == vim.NIL then
-                error("Identity file not found. Please set the AGE_IDENTITY environment variable.")
+            local id_path = vim.fn.expand(config.identity)
+            if vim.fn.filereadable(id_path) == 0 then
+                error("Identity file not found or not readable at: " .. id_path)
             end
 
             -- Execute age decryption
-            vim.cmd(string.format("silent '[,']!rage --decrypt -i %s", config.identity))
+            vim.cmd(string.format("silent %%!%s --decrypt -i %s", config.tool, id_path))
 
             -- Set local buffer options for .age files
             vim.bo.binary = false  -- Equivalent to 'setlocal nobin'
@@ -71,12 +76,11 @@ function M.setup(user_config)
             -- Set local buffer options for .age files
             vim.bo.binary = true  -- Equivalent to 'setlocal bin'
 
-            if config.recipient == vim.NIL then
+            if config.recipient == vim.NIL or config.recipient == "" or config.recipient == nil then
                 error("Recipient not specified. Please set the AGE_RECIPIENT environment variable.")
             end
 
-            -- Execute age encryption
-            vim.cmd(string.format("silent '[,']!rage --encrypt -r %s -a", config.recipient))
+            vim.cmd(string.format("silent %%!%s --encrypt -r %s -a", config.tool, config.recipient))
             vim.cmd("")
         end,
     })
@@ -98,6 +102,9 @@ function M.setup(user_config)
     vim.api.nvim_create_user_command('SetAgeIdentity', function(args)
         M.set_identity(args.args)
     end, { nargs = 1 }) 
+    vim.api.nvim_create_user_command('SetAgeTool', function(args)
+        M.set_tool(args.args)
+    end, { nargs = 1 })
 end
 
 -- Function to change the recipient
@@ -108,6 +115,12 @@ end
 -- Function to change the identity
 function M.set_identity(new_identity)
     config.identity = new_identity
+end
+
+
+-- Function to change the tool
+function M.set_tool(new_tool)
+    config.tool = new_tool
 end
 
 return M
