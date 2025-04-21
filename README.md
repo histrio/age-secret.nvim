@@ -45,6 +45,7 @@ require('age_secret').setup({
 ```vim
     :SetAgeRecipient age1...
     :SetAgeIdentity ~/age-key.txt
+    :SetAgeTool /path/to/age
 ```
 
 ## Requirements
