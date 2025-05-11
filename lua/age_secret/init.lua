@@ -14,6 +14,7 @@ function M.setup(user_config)
     if user_config ~= nil then
         config.recipient = user_config.recipient or config.recipient
         config.identity = user_config.identity or config.identity
+        config.tool = user_config.tool or config.tool
     end
 
 
@@ -59,7 +60,7 @@ function M.setup(user_config)
             end
 
             -- Execute age decryption
-            vim.cmd(string.format("silent %%!%s --decrypt -i %s", config.tool, id_path))
+            vim.cmd(string.format("silent %%!%s --decrypt -i %s 2>/dev/null", config.tool, id_path))
 
             -- Set local buffer options for .age files
             vim.bo.binary = false  -- Equivalent to 'setlocal nobin'
@@ -80,7 +81,7 @@ function M.setup(user_config)
                 error("Recipient not specified. Please set the AGE_RECIPIENT environment variable.")
             end
 
-            vim.cmd(string.format("silent %%!%s --encrypt -r %s -a", config.tool, config.recipient))
+            vim.cmd(string.format("silent %%!%s --encrypt -r %s -a 2>/dev/null", config.tool, config.recipient))
             vim.cmd("")
         end,
     })
